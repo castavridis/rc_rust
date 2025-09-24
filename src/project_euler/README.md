@@ -1,0 +1,1 @@
+A few Recursers mentioned Project Euler and it seemed like a good way for me to brush up and improve my math skills while learning Rust.
