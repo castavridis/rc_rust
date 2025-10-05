@@ -1,1 +1,10 @@
-/target
+# Rust-specific
+/target/
+**/*.rs.bk
+**/*.swp
+
+# macOS-specific
+.DS_Store
+.Trashes
+.Spotlight-V100
+.TemporaryItems
