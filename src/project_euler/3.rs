@@ -19,7 +19,7 @@ fn is_prime(value: i64, primes: Vec<i64>) -> bool {
 
 fn main () {
   let mut primes: Vec<i64> = Vec::new();
-  // Start at 2 because we know numbers > 1 are divisble by 1
+  // Start at 2 because we know numbers > 1 are divisible by 1
   let mut value: i64 = 2;
   let mut ceiling: String = String::new();
   io::stdin()
