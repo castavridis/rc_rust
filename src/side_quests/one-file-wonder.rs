@@ -13,14 +13,17 @@ use std::time::{ Duration };
 use std::thread::sleep;
 
 static NUM_LINES: i32 = 9;
-static NUM_COLOR_FRAMES: usize = 5;
+static NUM_COLOR_FRAMES: usize = 7;
 static TEXT_COLORS: [(i32,i32,i32); NUM_COLOR_FRAMES] = [
-  (43, 43, 43),
-  (43, 86, 66),
-  (43, 129, 89),
-  (43, 172, 112),
-  (42, 213, 135),
+  (230, 98, 207),
+  (215, 120, 175),
+  (200, 142, 143),
+  (185, 164, 111),
+  (170, 186, 79),
+  (155, 208, 47),
+  (142, 232, 14),
 ];
+static BASE_COLOR: (i32,i32,i32) = (43,43,43);
 static BASIC_PRINCIPLES: [&'static str; 10] = [
   "Creativity is the natural order of life.\nLife is energy: pure creative energy.",
   "There is an underlying, in-dwelling creative\nforce infusing all of life—including ourselves.",
@@ -46,16 +49,24 @@ static PRINCIPLE_NUMS: [&'static str; 10] = [
   "𝖙𝖊𝖓",
 ];
 const SCENE_LENGTH_MS: u64 = 2000;
-const SCENE_STEPS: u64 = 5;
+const SCENE_STEPS: u64 = 7;
 const ANIMATION_DURATION: u64 = SCENE_LENGTH_MS/SCENE_STEPS;
 
 fn cycle_principles (step: usize) {
   if step == 1 {
     // Print ten empty lines
-    for _ in 0..NUM_LINES {
+    for _ in 0..(NUM_LINES-1) {
       println!();
     }
-    print!("\n𝙿𝚛𝚎𝚜𝚜 𝙴𝙽𝚃𝙴𝚁 𝚝𝚘 𝚊𝚍𝚟𝚊𝚗𝚌𝚎 𝚝𝚑𝚎 𝚙𝚛𝚒𝚗𝚌𝚒𝚙𝚕𝚎𝚜.\n");
+    println!("\x1b[38;2;{};{};{}m𝙿𝚛𝚎𝚜𝚜 𝙴𝙽𝚃𝙴𝚁 𝚝𝚘 𝚊𝚍𝚟𝚊𝚗𝚌𝚎 𝚝𝚑𝚎 𝚙𝚛𝚒𝚗𝚌𝚒𝚙𝚕𝚎𝚜.\x1b[m",
+      BASE_COLOR.0,
+      BASE_COLOR.1,
+      BASE_COLOR.2,
+    );
+
+    // Move cursor up to be above "Press ENTER...""
+    print!("\x1b[{}A", 1);
+    
     sleep(Duration::new(1, 0))
   }
   let index = step - 1;
@@ -65,7 +76,8 @@ fn cycle_principles (step: usize) {
   let mut iteration = 0;
   
   loop {
-    let color:(i32,i32,i32) = TEXT_COLORS[iteration % NUM_COLOR_FRAMES];
+    let color1:(i32,i32,i32) = TEXT_COLORS[iteration % NUM_COLOR_FRAMES];
+    let color2:(i32,i32,i32) = TEXT_COLORS[NUM_COLOR_FRAMES - 1 - (iteration % NUM_COLOR_FRAMES)];
     let lines: Vec<&_> = principle.split('\n').collect::<Vec<_>>();
     let line1: &str = lines[0];
     let line2: &str = lines[1];
@@ -77,20 +89,22 @@ fn cycle_principles (step: usize) {
       // Clear the line
       print!("\r\x1b[K");
 
-      if line == 4 {
+      if line == 3 {
         print!("\x1b[38;2;{};{};{}m\t𝔓𝔯𝔦𝔫𝔠𝔦𝔭𝔩𝔢 {principle_num}:\x1b[m",
-          color.0, color.1, color.2
+          BASE_COLOR.0,
+          BASE_COLOR.1,
+          BASE_COLOR.2,
         );
       }
-      if line == 6 {
-        print!("\x1b[38;2;{};{};{}m\t{}\x1b[m",
-          color.0, color.1, color.2,
+      if line == 4 {
+        print!("\x1b[38;2;{};{};{}m\t  {}\x1b[m",
+          color1.0, color1.1, color1.2,
           line1,
         );
       }
-      if line == 7 {
-        print!("\x1b[38;2;{};{};{}m\t{}\x1b[m",
-          color.0, color.1, color.2,
+      if line == 5 {
+        print!("\x1b[38;2;{};{};{}m\t    {}\x1b[m",
+          color2.0, color2.1, color2.2,
           line2,
         );
       }
@@ -121,32 +135,12 @@ fn cycle_principles (step: usize) {
   }
 }
 
-fn introduction () {
-  let mut iteration: u64 = 0;
-  loop {
-    if iteration > SCENE_STEPS {
-      break;
-    }
-    let color:(i32,i32,i32) = TEXT_COLORS[iteration as usize % NUM_COLOR_FRAMES];
-
-    // Move cursor up to the start of our animation area
-    print!("\x1b[{}A", NUM_LINES);
-
-    for _ in 0..NUM_LINES {
-      // Clear the line
-      print!("\r\x1b[K");
-    }
-
-    print!("\n\n\n\n\t\x1b[38;2;{};{};{}m\n\t{}\n\n\n\x1b[m",
-      color.0, color.1, color.2,
-      "𝙷𝚎𝚕𝚕𝚘 𝚏𝚎𝚕𝚕𝚘𝚠 𝚠𝚊𝚗𝚍𝚎𝚛𝚎𝚛."
-    );
-    sleep(Duration::from_millis(ANIMATION_DURATION))
-  }
-}
-
 fn print_principles () {
-  println!("\n𝙰𝚛𝚎 𝚢𝚘𝚞 𝚛𝚎𝚊𝚍𝚢 𝚝𝚘 𝚛𝚎𝚊𝚍 𝚝𝚑𝚎 𝙱𝚊𝚜𝚒𝚌 𝙿𝚛𝚒𝚗𝚌𝚒𝚙𝚕𝚎𝚜? (𝚈)/𝙽");
+  println!("\x1b[38;2;{};{};{}m\n𝙰𝚛𝚎 𝚢𝚘𝚞 𝚛𝚎𝚊𝚍𝚢 𝚝𝚘 𝚛𝚎𝚊𝚍 𝚝𝚑𝚎 𝙱𝚊𝚜𝚒𝚌 𝙿𝚛𝚒𝚗𝚌𝚒𝚙𝚕𝚎𝚜? (𝚈)/𝙽\x1b[m",
+      BASE_COLOR.0,
+      BASE_COLOR.1,
+      BASE_COLOR.2,
+    );
   
   let mut input = String::new();
   io::stdin().read_line(&mut input).expect("Failed to read line.");
@@ -162,6 +156,5 @@ fn print_principles () {
 }
 
 fn main () {
-  // introduction();
   print_principles();
 }
